@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@toast-ui/editor@3.2.2/dist/toastui-editor.min.css" rel="stylesheet">
+
+<style>
+/* Increase font size for editor text */
+.ProseMirror {
+    font-size: 16px; /* Adjust the font size as needed */
+}
+</style>
+
+
+</head>
+<body>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Editor Dashboard</h1>
+                <p class="subtitle">Upload Images
+                </p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="layout">
+            <div>
+                <input type="file" multiple accept="image/*" id="file-input" class="is-hidden">
+                <label for="file-input" class="button is-info">Upload Images</label>
+            </div>
+            <div id="previews"></div>
+            <!--<button id="submit-button" class="button is-primary">Submit Images</button>-->
+        </div>
+    </div>
+
+
+
+<section class="section">
+  <div class="container maximum-width">
+    <h1 class="title">YAML Frontmatter Generator</h1>
+    <form id="yamlForm" class="box">
+
+      <div class="field">
+       <label class="label">Date</label>
+       <div class="control">
+          <input type="date" id="dateInput" name="dateInput" class="input" value="2024-03-25" required>
+       </div>
+      </div>
+
+      <div class="field">
+        <label class="label">Author</label>
+        <div class="control">
+          <input id="author" class="input" type="text" placeholder="Enter Authors (comma separated)" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Title</label>
+        <div class="control">
+          <input id="title" class="input" type="text" placeholder="Enter Title" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Rubrika</label>
+        <div class="control">
+          <input id="rubrika" class="input" type="text" placeholder="Enter Rubrika" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Image Credit</label>
+        <div class="control">
+          <input id="imageCredit" class="input" type="text" placeholder="Image Credit (comma separated)" required>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">Tags</label>
+        <div class="control">
+          <input id="tags" class="input" type="text" placeholder="Enter Tags (comma separated)" required>
+        </div>
+      </div>
+     <!-- <div class="field">
+        <label class="label">Sekcija</label>
+        <div class="control">
+          <input id="sekcija" class="input" type="text" placeholder="clanek" value="clanek" required>
+        </div>
+      </div>--->
+      <div class="field">
+        <label class="label">Sekcija</label>
+        <div class="control">
+          <div class="select">
+            <select id="sekcija" required>
+              <option value="clanek" selected>clanek</option>
+              <option value="mix">mix</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="field">
+        <label class="label">Draft</label>
+        <div class="control">
+          <div class="select">
+            <select id="draft" required>
+              <option value="false" selected>No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+    <!--  <div class="field">
+       <label class="label">Text</label>
+        <div class="control">
+          <textarea id="md" class="textarea is-large" placeholder="Large textarea" required></textarea>
+        </div>
+      </div>--->
+
+
+                <div class="field">
+                    <label class="label">Text</label>
+                    <div class="control">
+                        <!-- Replace the textarea with the editor element -->
+                        <div id="editor"></div>
+                    </div>
+                </div>
+
+
+      <div class="field">
+        <div class="control">
+          <button id="generateYAML" class="button is-primary">Generate YAML Frontmatter</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+
+
+
+<!--<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>-->
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+
+
+<!-- Image converter --->
+    <script>
+let refs = {
+    imagePreviews: document.querySelector('#previews'),
+    fileSelector: document.getElementById('file-input'),
+
+    modifiedFilenames: [] // Initialize modifiedFilenames array
+};
+
+// Function to add image preview
+function addImagePreview(container, imageURL, filename) {
+    let imageBox = document.createElement("div");
+    imageBox.classList.add("column", "is-one-quarter");
+
+    let imageLink = document.createElement("a");
+    imageLink.href = imageURL;
+    imageLink.download = filename;
+
+    let imgElement = document.createElement("img");
+    imgElement.src = imageURL;
+
+    let removeButton = document.createElement("button");
+    removeButton.textContent = "Remove";
+    removeButton.classList.add("button", "is-danger", "is-small");
+    removeButton.addEventListener("click", function() {
+        imageBox.remove();
+        refs.modifiedFilenames = refs.modifiedFilenames.filter(name => name !== filename);
+    });
+
+    let moveDownButton = document.createElement("button");
+    moveDownButton.textContent = "Move Down";
+    moveDownButton.classList.add("button", "is-primary", "is-small");
+    moveDownButton.addEventListener("click", function() {
+        let index = refs.modifiedFilenames.indexOf(filename);
+        if (index < refs.modifiedFilenames.length - 1) {
+            // Swap filenames
+            [refs.modifiedFilenames[index], refs.modifiedFilenames[index + 1]] = [refs.modifiedFilenames[index + 1], refs.modifiedFilenames[index]];
+            // Rearrange DOM elements
+            let nextImageBox = imageBox.nextElementSibling;
+            container.insertBefore(imageBox, nextImageBox.nextElementSibling);
+        }
+    });
+
+    imageLink.appendChild(imgElement);
+    imageBox.appendChild(imageLink);
+    imageBox.appendChild(removeButton);
+    imageBox.appendChild(moveDownButton);
+    container.appendChild(imageBox);
+
+    refs.modifiedFilenames.push(filename);
+}
+
+// Function to process file
+function processFile(file) {
+    if (!file) {
+        return;
+    }
+
+    let now = new Date();
+    let timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}T${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+
+    let reader = new FileReader();
+    reader.onload = function (event) {
+        let imageURL = event.target.result;
+        let filename = `${timestamp}.webp`;
+
+        // Create temporary image element to get image dimensions
+        let tempImg = new Image();
+        tempImg.src = imageURL;
+        tempImg.onload = function() {
+            let targetWidth = 820;
+            let targetHeight = (targetWidth / tempImg.width) * tempImg.height;
+
+            // Create canvas for resizing
+            let canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            let ctx = canvas.getContext('2d');
+            
+            // Draw image on canvas with resized dimensions
+            ctx.drawImage(tempImg, 0, 0, targetWidth, targetHeight);
+
+            // Convert canvas to data URL (WebP format)
+            imageURL = canvas.toDataURL("image/webp");
+
+            // Add image preview to the container
+            addImagePreview(refs.imagePreviews, imageURL, filename);
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+// Function to process files
+function processFiles(files) {
+    for (let file of files) {
+        processFile(file);
+    }
+}
+
+// Event listener for file input change
+refs.fileSelector.addEventListener("change", function () {
+    processFiles(refs.fileSelector.files);
+    refs.fileSelector.value = "";
+});
+
+// Function to print filenames in YAML format
+function printFilenamesYAML() {
+    console.log("Figures:");
+    refs.modifiedFilenames.forEach(filename => {
+        console.log(`- '${filename}'`);
+    });
+}
+
+
+    // Function to handle saving text
+    function saveText() {
+        const markdown = editor.getMarkdown();
+    }
+
+    // Event listener for "Generate YAML" button
+    document.getElementById('generateYAML').addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const slugify = str => {
+          const slug = str
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+
+          // Limit slug to 5 words
+          const words = slug.split('-').slice(0, 5);
+          return words.join('-');
+        };
+
+        // Get values from input fields
+        const author = document.getElementById('author').value.split(',').map(author => author.trim());
+        const title = document.getElementById('title').value;
+        const rubrika = document.getElementById('rubrika').value;
+        const imageCredit = document.getElementById('imageCredit').value;
+        const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim());
+        const sekcija = document.getElementById('sekcija').value;
+        const draft = document.getElementById('draft').value;
+        const md = editor.getMarkdown(); // Get markdown content from the editor
+
+        const slug = slugify(title);
+
+        // Get and format the date input value
+        const dateInput = document.getElementById('dateInput');
+        const selectedDate = new Date(dateInput.value);
+        const dateFile = selectedDate.toISOString().slice(0, 10);
+        const dateHugo = selectedDate.toISOString().slice(0, 19);
+        const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
+        const filename = `${dateFile}-${randomSuffix}.md`;
+
+        // Format data into YAML
+        const yamlFrontmatter = `---\nAuthor:\n${author.map(author => `- '${author}'`).join('\n')}\nDate: '${dateHugo}'\nRubrika: '${rubrika}'\nTags:\n${tags.map(tag => `- '${tag}'`).join('\n')}\nTitle: '${title}'\nSlug: '${slug}'\nimageCredit: '${imageCredit}'\nsekcija:\n- '${sekcija}'\nDatoteka: '${filename}'\ndraft: '${draft}'\n\nFigures:\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}\n---\n\n${md}`;
+
+
+        // Output YAML frontmatter
+        console.log(yamlFrontmatter);
+    });
+
+    // TOAST UI editor
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        height: '1500px',
+        initialEditType: 'markdown',
+        previewStyle: 'vertical',
+        toolbarItems: [
+          ['heading', 'bold', 'italic'],
+          ['hr', 'quote'],
+          ['ul', 'ol', 'task', 'indent', 'outdent'],
+          ['table', 'link']
+        ]
+    });
+
+
+
+    // Attach event listener to the save text button
+    document.getElementById('generateYAML').addEventListener('click', saveText);
+
+    </script>
+
+
+
+
+</body>
+</html>
+
