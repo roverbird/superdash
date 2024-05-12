@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Editor Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
+
     <link href="https://cdn.jsdelivr.net/npm/@toast-ui/editor@3.2.2/dist/toastui-editor.min.css" rel="stylesheet">
 
 <style>
@@ -37,6 +38,19 @@
             <!--<button id="submit-button" class="button is-primary">Submit Images</button>-->
         </div>
     </div>
+
+
+    <div class="container">
+        <div class="layout">
+            <div>
+                <input type="file" multiple accept=".docx" id="parseWordDocxFile" class="is-hidden">
+                <label for="parseWordDocxFile" class="button is-info">Upload Docx</label>
+            </div>
+            <!--<button id="submit-button" class="button is-primary">Submit Images</button>-->
+        </div>
+    </div>
+
+
 
 
 
@@ -143,53 +157,40 @@
 
 
 
-<!--<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>-->
+<!--Toast UI editor -->
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<!-- Mammoth to convert Docx -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
+
 
 
 
 <!-- Image converter --->
-    <script>
-let refs = {
+<script>
+// Define constants for element references
+  const refs = {
     imagePreviews: document.querySelector('#previews'),
     fileSelector: document.getElementById('file-input'),
-
+    parseWordDocxFileInput: document.getElementById('parseWordDocxFile'),
     modifiedFilenames: [] // Initialize modifiedFilenames array
-};
+  };
 
-// Function to add image preview
-function addImagePreview(container, imageURL, filename) {
-    let imageBox = document.createElement("div");
+  // Function to add image preview
+  function addImagePreview(container, imageURL, filename) {
+    const imageBox = document.createElement("div");
     imageBox.classList.add("column", "is-one-quarter");
 
-    let imageLink = document.createElement("a");
+    const imageLink = document.createElement("a");
     imageLink.href = imageURL;
     imageLink.download = filename;
 
-    let imgElement = document.createElement("img");
+    const imgElement = document.createElement("img");
     imgElement.src = imageURL;
 
-    let removeButton = document.createElement("button");
-    removeButton.textContent = "Remove";
-    removeButton.classList.add("button", "is-danger", "is-small");
-    removeButton.addEventListener("click", function() {
-        imageBox.remove();
-        refs.modifiedFilenames = refs.modifiedFilenames.filter(name => name !== filename);
-    });
+    const removeButton = createButton("X", "is-danger", () => removeImage(imageBox, filename));
 
-    let moveDownButton = document.createElement("button");
-    moveDownButton.textContent = "Move Down";
-    moveDownButton.classList.add("button", "is-primary", "is-small");
-    moveDownButton.addEventListener("click", function() {
-        let index = refs.modifiedFilenames.indexOf(filename);
-        if (index < refs.modifiedFilenames.length - 1) {
-            // Swap filenames
-            [refs.modifiedFilenames[index], refs.modifiedFilenames[index + 1]] = [refs.modifiedFilenames[index + 1], refs.modifiedFilenames[index]];
-            // Rearrange DOM elements
-            let nextImageBox = imageBox.nextElementSibling;
-            container.insertBefore(imageBox, nextImageBox.nextElementSibling);
-        }
-    });
+    const moveDownButton = createButton("Move Down", "is-primary", () => moveImageDown(container, imageBox, filename));
 
     imageLink.appendChild(imgElement);
     imageBox.appendChild(imageLink);
@@ -198,140 +199,197 @@ function addImagePreview(container, imageURL, filename) {
     container.appendChild(imageBox);
 
     refs.modifiedFilenames.push(filename);
-}
+  }
 
-// Function to process file
-function processFile(file) {
-    if (!file) {
-        return;
+  // Function to remove image
+  function removeImage(imageBox, filename) {
+    imageBox.remove();
+    refs.modifiedFilenames = refs.modifiedFilenames.filter(name => name !== filename);
+  }
+
+  // Function to move image down
+  function moveImageDown(container, imageBox, filename) {
+    const index = refs.modifiedFilenames.indexOf(filename);
+    if (index < refs.modifiedFilenames.length - 1) {
+      [refs.modifiedFilenames[index], refs.modifiedFilenames[index + 1]] = [refs.modifiedFilenames[index + 1], refs.modifiedFilenames[index]];
+      container.insertBefore(imageBox, imageBox.nextElementSibling.nextElementSibling);
     }
+  }
 
-    let now = new Date();
-    let timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}T${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+  // Helper function to create buttons
+  function createButton(text, className, onClick) {
+    const button = document.createElement("button");
+    button.textContent = text;
+    button.classList.add("button", className, "is-small");
+    button.addEventListener("click", onClick);
+    return button;
+  }
 
-    let reader = new FileReader();
+  // Function to process image file
+  function processFile(file) {
+    if (!file) return;
+
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-IMG-${Math.floor(Math.random() * 10000).toString().padStart(5, '0')}`;
+
+    const reader = new FileReader();
     reader.onload = function (event) {
-        let imageURL = event.target.result;
-        let filename = `${timestamp}.webp`;
+      const imageURL = event.target.result;
+      const filename = `${timestamp}.webp`;
 
-        // Create temporary image element to get image dimensions
-        let tempImg = new Image();
-        tempImg.src = imageURL;
-        tempImg.onload = function() {
-            let targetWidth = 820;
-            let targetHeight = (targetWidth / tempImg.width) * tempImg.height;
+      const tempImg = new Image();
+      tempImg.src = imageURL;
+      tempImg.onload = function() {
+        const targetWidth = 820;
+        const targetHeight = (targetWidth / tempImg.width) * tempImg.height;
 
-            // Create canvas for resizing
-            let canvas = document.createElement('canvas');
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-            let ctx = canvas.getContext('2d');
-            
-            // Draw image on canvas with resized dimensions
-            ctx.drawImage(tempImg, 0, 0, targetWidth, targetHeight);
+        const canvas = document.createElement('canvas');
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const ctx = canvas.getContext('2d');
 
-            // Convert canvas to data URL (WebP format)
-            imageURL = canvas.toDataURL("image/webp");
+        ctx.drawImage(tempImg, 0, 0, targetWidth, targetHeight);
 
-            // Add image preview to the container
-            addImagePreview(refs.imagePreviews, imageURL, filename);
-        };
+        const webPURL = canvas.toDataURL("image/webp");
+        addImagePreview(refs.imagePreviews, webPURL, filename);
+      };
     };
     reader.readAsDataURL(file);
-}
+  }
 
-// Function to process files
-function processFiles(files) {
-    for (let file of files) {
-        processFile(file);
+  // Function to process files
+  function processFiles(files) {
+    for (const file of files) {
+      processFile(file);
     }
-}
+  }
 
-// Event listener for file input change
-refs.fileSelector.addEventListener("change", function () {
+  // Event listener for file input change
+  refs.fileSelector.addEventListener("change", function () {
     processFiles(refs.fileSelector.files);
     refs.fileSelector.value = "";
-});
+  });
 
-// Function to print filenames in YAML format
-function printFilenamesYAML() {
+  // Function to print filenames in YAML format
+  function printFilenamesYAML() {
     console.log("Figures:");
     refs.modifiedFilenames.forEach(filename => {
-        console.log(`- '${filename}'`);
+      console.log(`- '${filename}'`);
     });
+  }
+
+  // Function to handle saving text
+  function saveText() {
+    const markdown = editor.getMarkdown();
+    // Implement saving logic here
+  }
+
+  // Event listener for "Generate YAML" button
+  document.getElementById('generateYAML').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    const slugify = str => {
+      const normalizedStr = str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
+      const slug = normalizedStr
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
+      const words = slug.split('-').slice(0, 5);
+      return words.join('-');
+    };
+
+    const author = document.getElementById('author').value.split(',').map(author => author.trim());
+    const title = document.getElementById('title').value;
+    const rubrika = document.getElementById('rubrika').value;
+    const imageCredit = document.getElementById('imageCredit').value;
+    const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim());
+    const sekcija = document.getElementById('sekcija').value;
+    const draft = document.getElementById('draft').value;
+    const md = editor.getMarkdown();
+
+    const slug = slugify(title);
+    const selectedDate = new Date(document.getElementById('dateInput').value);
+    const dateFile = selectedDate.toISOString().slice(0, 10);
+    const dateHugo = selectedDate.toISOString().slice(0, 19);
+    const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
+    const filename = `${dateFile}-TXT-${randomSuffix}.md`;
+
+    //const yamlFrontmatter = `---\nAuthor:\n${author.map(author => `- '${author}'`).join('\n')}\nDate: '${dateHugo}'\nRubrika: '${rubrika}'\nTags:\n${tags.map(tag => `- '${tag}'`).join('\n')}\nTitle: '${title}'\nSlug: '${slug}'\nimageCredit: '${imageCredit}'\nsekcija:\n- '${sekcija}'\nDatoteka: '${filename}'\ndraft: '${draft}'\n\nFigures:\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}\n---\n\n${md}`;
+
+
+
+const yamlFrontmatter = `---
+Author:${author && author.some(Boolean) ? `\n${author.map(author => `- '${author}'`).join('\n')}` : ''}
+Date: '${dateHugo}'
+Rubrika:${rubrika ? ` '${rubrika}'` : ''}
+Tags:${tags && tags.some(Boolean) ? `\n${tags.map(tag => `- '${tag}'`).join('\n')}` : ''}
+Title: '${title}'
+Slug:${slug ? ` '${slug}'` : ''}
+imageCredit:${imageCredit ? ` '${imageCredit}'` : ''}
+sekcija:${sekcija ? `\n- '${sekcija}'` : ''}
+Datoteka:${filename ? ` '${filename}'` : ''}
+draft:${draft ? ` '${draft}'` : ''}
+
+Figures:${refs.modifiedFilenames.length > 0 ? `\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}` : ''}
+Foto:${refs.modifiedFilenames.length > 0 ? ` '${refs.modifiedFilenames[0]}'` : ''}
+---\n\n${md}`;
+
+    console.log(yamlFrontmatter);
+  });
+
+  // TOAST UI editor
+  const editor = new toastui.Editor({
+    el: document.querySelector('#editor'),
+    height: '1500px',
+    initialEditType: 'markdown',
+    previewStyle: 'vertical',
+    toolbarItems: [
+      ['heading', 'bold', 'italic'],
+      ['hr', 'quote'],
+      ['ul', 'ol', 'task', 'indent', 'outdent'],
+      ['table', 'link'],
+    ]
+  });
+
+// Function to parse uploaded Word document to Markdown
+function parseWordDocxFile(inputElement) {
+  var files = inputElement.files || [];
+  if (!files.length) return;
+  var file = files[0];
+
+  console.time();
+  var reader = new FileReader();
+  reader.onloadend = function(event) {
+    var arrayBuffer = reader.result;
+
+    mammoth.convertToMarkdown({arrayBuffer: arrayBuffer}).then(function (resultObject) {
+      let markdown = resultObject.value;
+
+      // Remove unwanted escaping of punctuation marks
+      markdown = markdown.replace(/\\([^\w\s])/g, '$1');
+
+      // Set the modified Markdown to the editor
+      editor.setMarkdown(markdown);
+    }).catch(function(error) {
+      console.error('Error converting Word document to Markdown:', error);
+    });
+  };
+  reader.readAsArrayBuffer(file);
 }
 
 
-    // Function to handle saving text
-    function saveText() {
-        const markdown = editor.getMarkdown();
-    }
+// Event listener for Word document file input change
+refs.parseWordDocxFileInput.addEventListener("change", function () {
+  parseWordDocxFile(this);
+  this.value = ""; // Clear the input field after processing the file
+});
 
-    // Event listener for "Generate YAML" button
-    document.getElementById('generateYAML').addEventListener('click', function(event) {
-        event.preventDefault();
-
-        const slugify = str => {
-          const slug = str
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-
-          // Limit slug to 5 words
-          const words = slug.split('-').slice(0, 5);
-          return words.join('-');
-        };
-
-        // Get values from input fields
-        const author = document.getElementById('author').value.split(',').map(author => author.trim());
-        const title = document.getElementById('title').value;
-        const rubrika = document.getElementById('rubrika').value;
-        const imageCredit = document.getElementById('imageCredit').value;
-        const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim());
-        const sekcija = document.getElementById('sekcija').value;
-        const draft = document.getElementById('draft').value;
-        const md = editor.getMarkdown(); // Get markdown content from the editor
-
-        const slug = slugify(title);
-
-        // Get and format the date input value
-        const dateInput = document.getElementById('dateInput');
-        const selectedDate = new Date(dateInput.value);
-        const dateFile = selectedDate.toISOString().slice(0, 10);
-        const dateHugo = selectedDate.toISOString().slice(0, 19);
-        const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
-        const filename = `${dateFile}-${randomSuffix}.md`;
-
-        // Format data into YAML
-        const yamlFrontmatter = `---\nAuthor:\n${author.map(author => `- '${author}'`).join('\n')}\nDate: '${dateHugo}'\nRubrika: '${rubrika}'\nTags:\n${tags.map(tag => `- '${tag}'`).join('\n')}\nTitle: '${title}'\nSlug: '${slug}'\nimageCredit: '${imageCredit}'\nsekcija:\n- '${sekcija}'\nDatoteka: '${filename}'\ndraft: '${draft}'\n\nFigures:\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}\n---\n\n${md}`;
-
-
-        // Output YAML frontmatter
-        console.log(yamlFrontmatter);
-    });
-
-    // TOAST UI editor
-    const editor = new toastui.Editor({
-        el: document.querySelector('#editor'),
-        height: '1500px',
-        initialEditType: 'markdown',
-        previewStyle: 'vertical',
-        toolbarItems: [
-          ['heading', 'bold', 'italic'],
-          ['hr', 'quote'],
-          ['ul', 'ol', 'task', 'indent', 'outdent'],
-          ['table', 'link']
-        ]
-    });
-
-
-
-    // Attach event listener to the save text button
-    document.getElementById('generateYAML').addEventListener('click', saveText);
-
-    </script>
+// Attach event listener to the save text button
+document.getElementById('generateYAML').addEventListener('click', saveText);
+</script>
 
 
 
