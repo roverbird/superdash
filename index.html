@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Editor Dashboard</title>
+    <title>Hugo Editor Dashboard</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
 
     <link href="https://cdn.jsdelivr.net/npm/@toast-ui/editor@3.2.2/dist/toastui-editor.min.css" rel="stylesheet">
@@ -22,7 +22,8 @@
 
     <section class="section">
         <div class="container">
-            <h1 class="title">Editor Dashboard</h1>
+            <h1 class="title">Hugo Editor Dashboard</h1>
+            <p class="subtitle">Customizable JS panel to create markdown with YAML frontmatter for Hugo and other headless CMS. Allows you to convert images to webp.</p>
 
 
         <div class="layout">
@@ -49,143 +50,115 @@
 
 
 <br>
+<!-- input webform starts -->
+<div class="container">
+<p class="subtitle">Step 3: Fill-in metadata</p>
 
-  <div class="container">
-    <p class="subtitle">Step 3: Fill-in metadata</p>
-    <form id="yamlForm" class="box">
-
-      <div class="field">
-       <label class="label">Date</label>
-       <div class="control">
-          <input type="date" id="dateInput" name="dateInput" class="input" value="2024-03-25" required>
-       </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Author</label>
+<form id="yamlForm" class="box">
+    <div class="field">
+        <label class="label">Date *</label>
         <div class="control">
-          <input id="author" class="input" type="text" placeholder="Enter Authors (comma separated)" required maxlength="250">
+            <input type="date" id="dateInput" name="dateInput" class="input" required style="width: 33%;">
         </div>
-      </div>
-      <div class="field">
-        <label class="label">Title</label>
+    </div>
+
+    <div class="field">
+        <label class="label">Author *</label>
         <div class="control">
-          <input id="title" class="input" type="text" placeholder="Enter Title" required maxlength="250">
+            <input id="author" class="input" type="text" placeholder="Enter Authors (comma separated)" required maxlength="250" style="width: 33%;">
         </div>
-      </div>
-      <div class="field">
-        <label class="label">Rubrika</label>
+    </div>
+
+    <div class="field">
+        <label class="label">Rubrika *</label>
         <div class="control">
-          <input id="rubrika" class="input" type="text" placeholder="Enter Rubrika" required maxlength="100">
+            <input id="rubrika" class="input" type="text" placeholder="Enter Rubrika" required maxlength="100" style="width: 33%;">
         </div>
-      </div>
-      <div class="field">
-        <label class="label">Image Credit</label>
+    </div>
+
+    <div class="field">
+        <label class="label">Article Title *</label>
         <div class="control">
-          <input id="imageCredit" class="input" type="text" placeholder="Image Credit (comma separated)" required maxlength="350">
+            <input id="title" class="input" type="text" placeholder="Enter Title" required maxlength="250">
         </div>
-      </div>
-      <div class="field">
-        <label class="label">Tags</label>
+    </div>
+
+    <div class="field">
+        <label class="label">Image Credit *</label>
         <div class="control">
-          <input id="tags" class="input" type="text" placeholder="Enter Tags (comma separated)" required maxlength="250">
+            <input id="imageCredit" class="input" type="text" placeholder="Enter Image Credits (comma separated)" required maxlength="350">
         </div>
-      </div>
-     <!-- <div class="field">
-        <label class="label">Sekcija</label>
+    </div>
+
+    <div class="field">
+        <label class="label">Tags *</label>
         <div class="control">
-          <input id="sekcija" class="input" type="text" placeholder="clanek" value="clanek" required>
+            <input id="tags" class="input" type="text" placeholder="Enter Tags (comma separated)" required maxlength="250">
         </div>
-      </div>--->
-      <div class="field">
-        <label class="label">Sekcija</label>
+    </div>
+
+    <div class="field">
+        <label class="label">Sekcija *</label>
         <div class="control">
-          <div class="select">
-            <select id="sekcija" required>
-              <option value="clanek" selected>clanek</option>
-              <option value="mix">mix</option>
-            </select>
-          </div>
+            <div class="select">
+                <select id="sekcija" required>
+                    <option value="clanek" selected>clanek</option>
+                    <option value="mix">mix</option>
+                </select>
+            </div>
         </div>
-      </div>
+    </div>
 
-
-
-      <div class="field">
-        <label class="label">Draft</label>
+    <div class="field">
+        <label class="label">Draft *</label>
         <div class="control">
-          <div class="select">
-            <select id="draft" required>
-              <option value="false" selected>No</option>
-              <option value="true">Yes</option>
-            </select>
-          </div>
+            <div class="select">
+                <select id="draft" required>
+                    <option value="false">No</option>
+                    <option value="true" selected>Yes</option>
+                </select>
+            </div>
         </div>
-      </div>
+    </div>
 
-    <!--  <div class="field">
-       <label class="label">Text</label>
+    <div class="field">
+        <label class="label">Text</label>
         <div class="control">
-          <textarea id="md" class="textarea is-large" placeholder="Large textarea" required></textarea>
+            <!-- Replace the textarea with the editor element -->
+            <div id="editor"></div>
         </div>
-      </div>--->
+    </div>
 
+    <!--<div class="control">
+        <button type="submit" id="downloadMarkdownWithYAMLAndImages" class="button is-primary">Downoad Package</button>
+    </div>--->
 
-                <div class="field">
-                    <label class="label">Text</label>
-                    <div class="control">
-                        <!-- Replace the textarea with the editor element -->
-                        <div id="editor"></div>
-                    </div>
-                </div>
+    <br>
 
+    <div class="control">
+        <div id="uploadMessage" class="is-size-4 has-text-weight-bold pb-6"></div>
 
-      <!--<div class="field">
-        <div class="control">
-          <button id="generateYAML" class="button is-primary">Generate YAML Frontmatter</button>
-        </div>-->
+        <button type="submit" id="uploadMarkdownWithYAMLAndImages" class="button is-primary">Upload Package</button>
+    </div>
+</form>
 
-        <div class="control">
-          <button id="downloadMarkdownWithYAMLAndImages" class="button is-primary">Downoad Package</button>
-        </div>
+</div>
 
-<br>
-
-        <div class="control">
-
-          <div id="uploadMessage"></div>
-          <button id="uploadMarkdownWithYAMLAndImages" class="button is-primary">Upload Package</button>
-        </div>
-
-
-
-
-      </div>
-    </form>
-  </div>
 </section>
 
 
-
-
+<!-- load required libraries -->
 <!--Toast UI editor -->
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <!-- Mammoth to convert Docx -->
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
 <!-- JSZip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <!-- FileSaver -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
 
-
-
-
-
-
-<!-- Image converter --->
+<!-- Load Dashboard Script --->
 <script>
 // Define constants for element references
 const refs = {
@@ -318,11 +291,12 @@ function generateYAMLFrontmatter() {
         return words.join('-');
     };
 
-    const author = document.getElementById('author').value.split(',').map(author => author.trim());
-    const title = document.getElementById('title').value;
-    const rubrika = document.getElementById('rubrika').value;
-    const imageCredit = document.getElementById('imageCredit').value;
-    const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim());
+    const author = document.getElementById('author').value.split(',').map(author => author.trim().replace(/['"]/g, ''));
+    const title = document.getElementById('title').value.replace(/['"]/g, '');
+    const rubrika = document.getElementById('rubrika').value.replace(/['"]/g, '');
+    const imageCredit = document.getElementById('imageCredit').value.replace(/['"]/g, '');
+    const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim().replace(/['"]/g, ''));
+
     const sekcija = document.getElementById('sekcija').value;
     const draft = document.getElementById('draft').value;
     const md = editor.getMarkdown();
@@ -334,6 +308,7 @@ function generateYAMLFrontmatter() {
     const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
     const filenameMd = `${dateFilename}-TXT-${randomSuffix}.md`;
 
+    // Set your YAML frontmatter here
     const yamlFrontmatter = `---
 Author:${author && author.some(Boolean) ? `\n${author.map(author => `- '${author}'`).join('\n')}` : ''}
 Date: '${dateHugo}'
@@ -412,7 +387,8 @@ function downloadMarkdownWithYAMLAndImages() {
 function uploadZipToFlask(zip) {
     // Create FormData object
     const formData = new FormData();
-    formData.append('zipFile', zip, 'markdownFiles.zip');
+    const datePaket = Date.now();
+    formData.append('zipFile', zip, `paket-${datePaket}.zip`);
 
     // Make a POST request to Flask app
     fetch('/uploadprocessor/', {
@@ -428,17 +404,14 @@ function uploadZipToFlask(zip) {
     })
     .then(data => {
         // Update the content of the <div> with the message
-        document.getElementById('uploadMessage').innerText = data.message;
+        document.getElementById('uploadMessage').innerHTML = data.message;
+
     })
     .catch(error => {
         // Handle any errors
         console.error('Error:', error);
     });
 }
-
-
-
-
 
 function uploadMarkdownWithYAMLAndImages() {
     const { yamlFrontmatter, filenameMd } = generateYAMLFrontmatter();
@@ -492,7 +465,7 @@ function uploadMarkdownWithYAMLAndImages() {
 // TOAST UI editor
 const editor = new toastui.Editor({
     el: document.querySelector('#editor'),
-    height: '1500px',
+    height: '1000px',
     initialEditType: 'markdown',
     previewStyle: 'vertical',
     toolbarItems: [
@@ -536,24 +509,20 @@ refs.parseWordDocxFileInput.addEventListener("change", function () {
 });
 
 // Event listener for "Generate YAML" button
-document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
-    event.preventDefault();
-    downloadMarkdownWithYAMLAndImages();
-});
+// This allows downloading File Package to local machine
+//document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('submit', function(event) {
+//    event.preventDefault();
+//    downloadMarkdownWithYAMLAndImages();
+//});
 
 
 // Event listener for "Upload Package" button
-document.getElementById('uploadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
+document.getElementById('yamlForm').addEventListener('submit', function(event) {
     event.preventDefault();
     uploadMarkdownWithYAMLAndImages();
 });
 
-
 </script>
-
-
-
-
 
 </body>
 </html>
