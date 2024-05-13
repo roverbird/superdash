@@ -23,14 +23,11 @@
     <section class="section">
         <div class="container">
             <h1 class="title">Editor Dashboard</h1>
-                <p class="subtitle">Upload Images
-                </p>
-        </div>
-    </section>
 
-    <div class="container">
+
         <div class="layout">
             <div>
+                <p class="subtitle">Step 1: Upload Images</p>
                 <input type="file" multiple accept="image/*" id="file-input" class="is-hidden">
                 <label for="file-input" class="button is-info">Upload Images</label>
             </div>
@@ -38,11 +35,11 @@
             <!--<button id="submit-button" class="button is-primary">Submit Images</button>-->
         </div>
     </div>
-
-
+<br>
     <div class="container">
         <div class="layout">
             <div>
+                <p class="subtitle">Step 2: Upload text in Docx format</p>
                 <input type="file" multiple accept=".docx" id="parseWordDocxFile" class="is-hidden">
                 <label for="parseWordDocxFile" class="button is-info">Upload Docx</label>
             </div>
@@ -51,12 +48,10 @@
     </div>
 
 
+<br>
 
-
-
-<section class="section">
-  <div class="container maximum-width">
-    <h1 class="title">YAML Frontmatter Generator</h1>
+  <div class="container">
+    <p class="subtitle">Step 3: Fill-in metadata</p>
     <form id="yamlForm" class="box">
 
       <div class="field">
@@ -69,31 +64,31 @@
       <div class="field">
         <label class="label">Author</label>
         <div class="control">
-          <input id="author" class="input" type="text" placeholder="Enter Authors (comma separated)" required>
+          <input id="author" class="input" type="text" placeholder="Enter Authors (comma separated)" required maxlength="250">
         </div>
       </div>
       <div class="field">
         <label class="label">Title</label>
         <div class="control">
-          <input id="title" class="input" type="text" placeholder="Enter Title" required>
+          <input id="title" class="input" type="text" placeholder="Enter Title" required maxlength="250">
         </div>
       </div>
       <div class="field">
         <label class="label">Rubrika</label>
         <div class="control">
-          <input id="rubrika" class="input" type="text" placeholder="Enter Rubrika" required>
+          <input id="rubrika" class="input" type="text" placeholder="Enter Rubrika" required maxlength="100">
         </div>
       </div>
       <div class="field">
         <label class="label">Image Credit</label>
         <div class="control">
-          <input id="imageCredit" class="input" type="text" placeholder="Image Credit (comma separated)" required>
+          <input id="imageCredit" class="input" type="text" placeholder="Image Credit (comma separated)" required maxlength="350">
         </div>
       </div>
       <div class="field">
         <label class="label">Tags</label>
         <div class="control">
-          <input id="tags" class="input" type="text" placeholder="Enter Tags (comma separated)" required>
+          <input id="tags" class="input" type="text" placeholder="Enter Tags (comma separated)" required maxlength="250">
         </div>
       </div>
      <!-- <div class="field">
@@ -145,10 +140,26 @@
                 </div>
 
 
-      <div class="field">
+      <!--<div class="field">
         <div class="control">
           <button id="generateYAML" class="button is-primary">Generate YAML Frontmatter</button>
+        </div>-->
+
+        <div class="control">
+          <button id="downloadMarkdownWithYAMLAndImages" class="button is-primary">Downoad Package</button>
         </div>
+
+<br>
+
+        <div class="control">
+
+          <div id="uploadMessage"></div>
+          <button id="uploadMarkdownWithYAMLAndImages" class="button is-primary">Upload Package</button>
+        </div>
+
+
+
+
       </div>
     </form>
   </div>
@@ -163,23 +174,31 @@
 <!-- Mammoth to convert Docx -->
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
 
+<!-- JSZip -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- FileSaver -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+
+
+
 
 
 
 <!-- Image converter --->
 <script>
 // Define constants for element references
-  const refs = {
+const refs = {
     imagePreviews: document.querySelector('#previews'),
     fileSelector: document.getElementById('file-input'),
     parseWordDocxFileInput: document.getElementById('parseWordDocxFile'),
     modifiedFilenames: [] // Initialize modifiedFilenames array
-  };
+};
 
-  // Function to add image preview
-  function addImagePreview(container, imageURL, filename) {
+// Function to add image preview
+function addImagePreview(container, imageURL, filename) {
     const imageBox = document.createElement("div");
-    imageBox.classList.add("column", "is-one-quarter");
+    imageBox.classList.add("column", "is-one-fifth");
 
     const imageLink = document.createElement("a");
     imageLink.href = imageURL;
@@ -199,34 +218,34 @@
     container.appendChild(imageBox);
 
     refs.modifiedFilenames.push(filename);
-  }
+}
 
-  // Function to remove image
-  function removeImage(imageBox, filename) {
+// Function to remove image
+function removeImage(imageBox, filename) {
     imageBox.remove();
     refs.modifiedFilenames = refs.modifiedFilenames.filter(name => name !== filename);
-  }
+}
 
-  // Function to move image down
-  function moveImageDown(container, imageBox, filename) {
+// Function to move image down
+function moveImageDown(container, imageBox, filename) {
     const index = refs.modifiedFilenames.indexOf(filename);
     if (index < refs.modifiedFilenames.length - 1) {
-      [refs.modifiedFilenames[index], refs.modifiedFilenames[index + 1]] = [refs.modifiedFilenames[index + 1], refs.modifiedFilenames[index]];
-      container.insertBefore(imageBox, imageBox.nextElementSibling.nextElementSibling);
+        [refs.modifiedFilenames[index], refs.modifiedFilenames[index + 1]] = [refs.modifiedFilenames[index + 1], refs.modifiedFilenames[index]];
+        container.insertBefore(imageBox, imageBox.nextElementSibling.nextElementSibling);
     }
-  }
+}
 
-  // Helper function to create buttons
-  function createButton(text, className, onClick) {
+// Helper function to create buttons
+function createButton(text, className, onClick) {
     const button = document.createElement("button");
     button.textContent = text;
     button.classList.add("button", className, "is-small");
     button.addEventListener("click", onClick);
     return button;
-  }
+}
 
-  // Function to process image file
-  function processFile(file) {
+// Function to process image file
+function processFile(file) {
     if (!file) return;
 
     const now = new Date();
@@ -234,71 +253,69 @@
 
     const reader = new FileReader();
     reader.onload = function (event) {
-      const imageURL = event.target.result;
-      const filename = `${timestamp}.webp`;
+        const imageURL = event.target.result;
+        const filename = `${timestamp}.webp`;
 
-      const tempImg = new Image();
-      tempImg.src = imageURL;
-      tempImg.onload = function() {
-        const targetWidth = 820;
-        const targetHeight = (targetWidth / tempImg.width) * tempImg.height;
+        const tempImg = new Image();
+        tempImg.src = imageURL;
+        tempImg.onload = function() {
+            const targetWidth = 820;
+            const targetHeight = (targetWidth / tempImg.width) * tempImg.height;
 
-        const canvas = document.createElement('canvas');
-        canvas.width = targetWidth;
-        canvas.height = targetHeight;
-        const ctx = canvas.getContext('2d');
+            const canvas = document.createElement('canvas');
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+            const ctx = canvas.getContext('2d');
 
-        ctx.drawImage(tempImg, 0, 0, targetWidth, targetHeight);
+            ctx.drawImage(tempImg, 0, 0, targetWidth, targetHeight);
 
-        const webPURL = canvas.toDataURL("image/webp");
-        addImagePreview(refs.imagePreviews, webPURL, filename);
-      };
+            const webPURL = canvas.toDataURL("image/webp");
+            addImagePreview(refs.imagePreviews, webPURL, filename);
+        };
     };
     reader.readAsDataURL(file);
-  }
+}
 
-  // Function to process files
-  function processFiles(files) {
+// Function to process files
+function processFiles(files) {
     for (const file of files) {
-      processFile(file);
+        processFile(file);
     }
-  }
+}
 
-  // Event listener for file input change
-  refs.fileSelector.addEventListener("change", function () {
+// Event listener for file input change
+refs.fileSelector.addEventListener("change", function () {
     processFiles(refs.fileSelector.files);
     refs.fileSelector.value = "";
-  });
+});
 
-  // Function to print filenames in YAML format
-  function printFilenamesYAML() {
+// Function to print filenames in YAML format
+function printFilenamesYAML() {
     console.log("Figures:");
     refs.modifiedFilenames.forEach(filename => {
-      console.log(`- '${filename}'`);
+        console.log(`- '${filename}'`);
     });
-  }
+}
 
-  // Function to handle saving text
-  function saveText() {
+// Function to handle saving text
+function saveText() {
     const markdown = editor.getMarkdown();
     // Implement saving logic here
-  }
+}
 
-  // Event listener for "Generate YAML" button
-  document.getElementById('generateYAML').addEventListener('click', function(event) {
-    event.preventDefault();
-
+// Function to generate YAML frontmatter
+function generateYAMLFrontmatter() {
     const slugify = str => {
-      const normalizedStr = str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
-      const slug = normalizedStr
-        .toLowerCase()
-        .trim()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        const normalizedStr = str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics
+        const slug = normalizedStr
+            .toLowerCase()
+            .trim()
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
 
-      const words = slug.split('-').slice(0, 5);
-      return words.join('-');
+        const words = slug.split('-').slice(0, 5);
+        return words.join('-');
     };
 
     const author = document.getElementById('author').value.split(',').map(author => author.trim());
@@ -312,16 +329,12 @@
 
     const slug = slugify(title);
     const selectedDate = new Date(document.getElementById('dateInput').value);
-    const dateFile = selectedDate.toISOString().slice(0, 10);
     const dateHugo = selectedDate.toISOString().slice(0, 19);
+    const dateFilename = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
     const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
-    const filename = `${dateFile}-TXT-${randomSuffix}.md`;
+    const filenameMd = `${dateFilename}-TXT-${randomSuffix}.md`;
 
-    //const yamlFrontmatter = `---\nAuthor:\n${author.map(author => `- '${author}'`).join('\n')}\nDate: '${dateHugo}'\nRubrika: '${rubrika}'\nTags:\n${tags.map(tag => `- '${tag}'`).join('\n')}\nTitle: '${title}'\nSlug: '${slug}'\nimageCredit: '${imageCredit}'\nsekcija:\n- '${sekcija}'\nDatoteka: '${filename}'\ndraft: '${draft}'\n\nFigures:\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}\n---\n\n${md}`;
-
-
-
-const yamlFrontmatter = `---
+    const yamlFrontmatter = `---
 Author:${author && author.some(Boolean) ? `\n${author.map(author => `- '${author}'`).join('\n')}` : ''}
 Date: '${dateHugo}'
 Rubrika:${rubrika ? ` '${rubrika}'` : ''}
@@ -330,66 +343,214 @@ Title: '${title}'
 Slug:${slug ? ` '${slug}'` : ''}
 imageCredit:${imageCredit ? ` '${imageCredit}'` : ''}
 sekcija:${sekcija ? `\n- '${sekcija}'` : ''}
-Datoteka:${filename ? ` '${filename}'` : ''}
+Datoteka:${filenameMd ? ` '${filenameMd}'` : ''}
 draft:${draft ? ` '${draft}'` : ''}
 
 Figures:${refs.modifiedFilenames.length > 0 ? `\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}` : ''}
 Foto:${refs.modifiedFilenames.length > 0 ? ` '${refs.modifiedFilenames[0]}'` : ''}
----\n\n${md}`;
+---
+${md}`;
 
-    console.log(yamlFrontmatter);
-  });
+    return { yamlFrontmatter, filenameMd };
 
-  // TOAST UI editor
-  const editor = new toastui.Editor({
+}
+
+// Function to download Markdown file with YAML frontmatter and images
+
+function downloadMarkdownWithYAMLAndImages() {
+    const { yamlFrontmatter, filenameMd } = generateYAMLFrontmatter();
+    const filenamePaket = `${filenameMd}`;
+    const markdownContent = `${yamlFrontmatter}\n`;
+
+    // Create a zip file
+    const zip = new JSZip();
+
+    // Add Markdown file with YAML frontmatter
+    zip.file(filenamePaket, markdownContent);
+
+    // Add images
+    const getImageData = async (imgElement) => {
+        return new Promise((resolve, reject) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            //img.crossOrigin = 'anonymous'; // Enable CORS if images are from a different origin
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(resolve, 'image/webp');
+            };
+            img.onerror = reject;
+            img.src = imgElement.src;
+        });
+    };
+
+    const imagePromises = Array.from(document.querySelectorAll('#previews img')).map(img => getImageData(img));
+    Promise.all(imagePromises)
+        .then(imageBlobs => {
+            imageBlobs.forEach((blob, index) => {
+                const filename = refs.modifiedFilenames[index];
+                zip.file(filename, blob, { binary: true });
+            });
+
+            // Generate zip content and trigger download
+            zip.generateAsync({ type: "blob" }).then(content => {
+                saveAs(content, `${filenamePaket.split('.')[0]}.zip`);
+            }).catch(error => {
+                console.error('Error generating zip content:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching images:', error);
+        });
+}
+
+
+// Function to Upload Markdown File with YAML and images
+
+function uploadZipToFlask(zip) {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('zipFile', zip, 'markdownFiles.zip');
+
+    // Make a POST request to Flask app
+    fetch('/uploadprocessor/', {
+        method: 'POST',
+        body: formData  // Assuming formData contains the file data
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to upload file');
+        }
+    })
+    .then(data => {
+        // Update the content of the <div> with the message
+        document.getElementById('uploadMessage').innerText = data.message;
+    })
+    .catch(error => {
+        // Handle any errors
+        console.error('Error:', error);
+    });
+}
+
+
+
+
+
+function uploadMarkdownWithYAMLAndImages() {
+    const { yamlFrontmatter, filenameMd } = generateYAMLFrontmatter();
+    const filenamePaket = `${filenameMd}`;
+    const markdownContent = `${yamlFrontmatter}\n`;
+
+    // Create a zip file
+    const zip = new JSZip();
+
+    // Add Markdown file with YAML frontmatter
+    zip.file(filenamePaket, markdownContent);
+
+    // Add images
+    const getImageData = async (imgElement) => {
+        return new Promise((resolve, reject) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            //img.crossOrigin = 'anonymous'; // Enable CORS if images are from a different origin
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                canvas.toBlob(resolve, 'image/webp');
+            };
+            img.onerror = reject;
+            img.src = imgElement.src;
+        });
+    };
+
+    const imagePromises = Array.from(document.querySelectorAll('#previews img')).map(img => getImageData(img));
+    Promise.all(imagePromises)
+        .then(imageBlobs => {
+            imageBlobs.forEach((blob, index) => {
+                const filename = refs.modifiedFilenames[index];
+                zip.file(filename, blob, { binary: true });
+            });
+
+            // Generate zip content and trigger upload
+            zip.generateAsync({ type: "blob" }).then(content => {
+                uploadZipToFlask(content); // Upload the generated zip file
+            }).catch(error => {
+                console.error('Error generating zip content:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching images:', error);
+        });
+}
+
+// TOAST UI editor
+const editor = new toastui.Editor({
     el: document.querySelector('#editor'),
     height: '1500px',
     initialEditType: 'markdown',
     previewStyle: 'vertical',
     toolbarItems: [
-      ['heading', 'bold', 'italic'],
-      ['hr', 'quote'],
-      ['ul', 'ol', 'task', 'indent', 'outdent'],
-      ['table', 'link'],
+        ['heading', 'bold', 'italic'],
+        ['hr', 'quote'],
+        ['ul', 'ol', 'task', 'indent', 'outdent'],
+        ['table', 'link'],
     ]
-  });
+});
 
 // Function to parse uploaded Word document to Markdown
 function parseWordDocxFile(inputElement) {
-  var files = inputElement.files || [];
-  if (!files.length) return;
-  var file = files[0];
+    var files = inputElement.files || [];
+    if (!files.length) return;
+    var file = files[0];
 
-  console.time();
-  var reader = new FileReader();
-  reader.onloadend = function(event) {
-    var arrayBuffer = reader.result;
+    console.time();
+    var reader = new FileReader();
+    reader.onloadend = function(event) {
+        var arrayBuffer = reader.result;
 
-    mammoth.convertToMarkdown({arrayBuffer: arrayBuffer}).then(function (resultObject) {
-      let markdown = resultObject.value;
+        mammoth.convertToMarkdown({arrayBuffer: arrayBuffer}).then(function (resultObject) {
+            let markdown = resultObject.value;
 
-      // Remove unwanted escaping of punctuation marks
-      markdown = markdown.replace(/\\([^\w\s])/g, '$1');
+            // Remove unwanted escaping of punctuation marks
+            markdown = markdown.replace(/\\([^\w\s])/g, '$1');
 
-      // Set the modified Markdown to the editor
-      editor.setMarkdown(markdown);
-    }).catch(function(error) {
-      console.error('Error converting Word document to Markdown:', error);
-    });
-  };
-  reader.readAsArrayBuffer(file);
+            // Set the modified Markdown to the editor
+            editor.setMarkdown(markdown);
+        }).catch(function(error) {
+            console.error('Error converting Word document to Markdown:', error);
+        });
+    };
+    reader.readAsArrayBuffer(file);
 }
-
 
 // Event listener for Word document file input change
 refs.parseWordDocxFileInput.addEventListener("change", function () {
-  parseWordDocxFile(this);
-  this.value = ""; // Clear the input field after processing the file
+    parseWordDocxFile(this);
+    this.value = ""; // Clear the input field after processing the file
 });
 
-// Attach event listener to the save text button
-document.getElementById('generateYAML').addEventListener('click', saveText);
+// Event listener for "Generate YAML" button
+document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
+    event.preventDefault();
+    downloadMarkdownWithYAMLAndImages();
+});
+
+
+// Event listener for "Upload Package" button
+document.getElementById('uploadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
+    event.preventDefault();
+    uploadMarkdownWithYAMLAndImages();
+});
+
+
 </script>
+
 
 
 
