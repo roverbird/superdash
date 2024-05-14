@@ -147,7 +147,7 @@
 </section>
 
 
-<!-- load required libraries -->
+<!-- Load dependencies -->
 <!--Toast UI editor -->
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <!-- Mammoth to convert Docx -->
@@ -308,7 +308,7 @@ function generateYAMLFrontmatter() {
     const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
     const filenameMd = `${dateFilename}-TXT-${randomSuffix}.md`;
 
-    // Set your YAML frontmatter here
+    // Set your YAML frontmatter here, edit as necessary
     const yamlFrontmatter = `---
 Author:${author && author.some(Boolean) ? `\n${author.map(author => `- '${author}'`).join('\n')}` : ''}
 Date: '${dateHugo}'
@@ -391,7 +391,7 @@ function uploadZipToFlask(zip) {
     formData.append('zipFile', zip, `paket-${datePaket}.zip`);
 
     // Make a POST request to Flask app
-    fetch('/uploadprocessor/', {
+    fetch('/youruploadsendpointhere/', {
         method: 'POST',
         body: formData  // Assuming formData contains the file data
     })
@@ -510,7 +510,7 @@ refs.parseWordDocxFileInput.addEventListener("change", function () {
 
 // Event listener for "Generate YAML" button
 // This allows downloading File Package to local machine
-//document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('submit', function(event) {
+//document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
 //    event.preventDefault();
 //    downloadMarkdownWithYAMLAndImages();
 //});
