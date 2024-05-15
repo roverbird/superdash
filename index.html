@@ -129,9 +129,9 @@
         </div>
     </div>
 
-    <!--<div class="control">
-        <button type="submit" id="downloadMarkdownWithYAMLAndImages" class="button is-primary">Downoad Package</button>
-    </div>--->
+    <div class="control">
+        <button type="submit" id="downloadMarkdownWithYAMLAndImages" class="button is-primary">Download Package</button>
+    </div>
 
     <br>
 
@@ -519,7 +519,7 @@ refs.parseWordDocxFileInput.addEventListener("change", function () {
     this.value = ""; // Clear the input field after processing the file
 });
 
-// Event listener for "Generate YAML" button
+// Event listener for "Download Package" button
 // This allows downloading File Package to local machine
 document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
     event.preventDefault();

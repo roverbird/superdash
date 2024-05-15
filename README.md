@@ -48,9 +48,9 @@ You can install them from CDN:
 
 3. **Word Document Parsing**: Upload DOCX Word documents using the designated input field to convert them to Markdown format.
 
-4. **Downloading Markdown Files**: Use the "Generate YAML" button to download Markdown files with YAML frontmatter and images in a zip package to your local device.
+4. **Downloading Markdown Files**: Use the "Download Package" button to download Markdown files with YAML frontmatter and images in a zip package to your local device. Works out of the box.
 
-5. **Uploading Markdown Files**: Server integration: Upload the generated zip package using the "Upload Package" button to your Hugo site for deployment.
+5. **Uploading Markdown Files**: Server integration: Upload the generated zip package using the "Upload Package" button to your Hugo site for deployment. Note: must setup backend to use this.
 
 ## Contributing
 
