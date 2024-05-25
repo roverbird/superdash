@@ -56,6 +56,10 @@ You can install them from CDN:
 
 Contributions are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve this project.
 
+## User Cases
+
+This dashboards is used [here](https://frelih.org/polona/stranka-resnica-evropski-parlament-2024-kje-podpis/)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
