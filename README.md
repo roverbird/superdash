@@ -42,6 +42,8 @@ You can install them from CDN:
 
 ## Usage
 
+Used here: [Frelih.org](https://frelih.org/)
+
 1. **Adding Images**: Click the file input button to select images for upload. The dashboard will convert them to WebP format and display them in the preview area.
 
 2. **Managing Images**: Use the "X" button to remove images or the "Move Down" button to rearrange their order.
