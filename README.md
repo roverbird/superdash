@@ -42,7 +42,6 @@ You can install them from CDN:
 
 ## Usage
 
-Used here: [Frelih.org](https://frelih.org/)
 
 1. **Adding Images**: Click the file input button to select images for upload. The dashboard will convert them to WebP format and display them in the preview area.
 
@@ -57,10 +56,6 @@ Used here: [Frelih.org](https://frelih.org/)
 ## Contributing
 
 Contributions are welcome! Feel free to submit bug reports, feature requests, or pull requests to help improve this project.
-
-## User Cases
-
-This dashboards is used [here](https://frelih.org/polona/stranka-resnica-evropski-parlament-2024-kje-podpis/)
 
 ## License
 
