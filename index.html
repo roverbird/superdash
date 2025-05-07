@@ -4,33 +4,29 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hugo Editor Dashboard</title>
+    <title>Hugo Editor</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
-
-    <link href="https://cdn.jsdelivr.net/npm/@toast-ui/editor@3.2.2/dist/toastui-editor.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@toast-ui/editor@3.2.2/dist/toastui-editor.min.css">
 
 <style>
-/* Increase font size for editor text */
+/* Increase font size for TUI editor text */
 .ProseMirror {
-    font-size: 16px; /* Adjust the font size as needed */
+    font-size: 16px;
 }
 </style>
 
 
 </head>
 <body>
-
     <section class="section">
         <div class="container">
-            <h1 class="title">Hugo Editor Dashboard</h1>
-            <p class="subtitle">Customizable JS panel to create markdown with YAML frontmatter for Hugo and other headless CMS. Allows you to convert images to webp.</p>
-
+            <h1 class="title">Hugo Editor</h1>
 
         <div class="layout">
             <div>
                 <p class="subtitle">Step 1: Upload Images</p>
                 <input type="file" multiple accept="image/*" id="file-input" class="is-hidden">
-                <label for="file-input" class="button is-info">Upload Images</label>
+                <label for="file-input" class="button is-info">📷 Add Photo</label>
             </div>
             <div id="previews"></div>
             <!--<button id="submit-button" class="button is-primary">Submit Images</button>-->
@@ -40,14 +36,13 @@
     <div class="container">
         <div class="layout">
             <div>
-                <p class="subtitle">Step 2: Upload text in Docx format</p>
+                <p class="subtitle">Step 2: Upload article in MS Word Docx format (optionally)</p>
                 <input type="file" multiple accept=".docx" id="parseWordDocxFile" class="is-hidden">
-                <label for="parseWordDocxFile" class="button is-info">Upload Docx</label>
+                <label for="parseWordDocxFile" class="button is-info">🗎 Add DOCX</label>
             </div>
             <!--<button id="submit-button" class="button is-primary">Submit Images</button>-->
         </div>
     </div>
-
 
 <br>
 <!-- input webform starts -->
@@ -56,9 +51,9 @@
 
 <form id="yamlForm" class="box">
     <div class="field">
-        <label class="label">Date *</label>
+        <label class="label">Date and Time *</label>
         <div class="control">
-            <input type="date" id="dateInput" name="dateInput" class="input" required style="width: 33%;">
+            <input type="datetime-local" id="dateInput" name="dateInput" class="input" required style="width: 33%;">
         </div>
     </div>
 
@@ -69,12 +64,6 @@
         </div>
     </div>
 
-    <div class="field">
-        <label class="label">Rubrika *</label>
-        <div class="control">
-            <input id="rubrika" class="input" type="text" placeholder="Enter Rubrika" required maxlength="100" style="width: 33%;">
-        </div>
-    </div>
 
     <div class="field">
         <label class="label">Article Title *</label>
@@ -84,9 +73,16 @@
     </div>
 
     <div class="field">
-        <label class="label">Image Credit *</label>
+        <label class="label">Summary *</label>
         <div class="control">
-            <input id="imageCredit" class="input" type="text" placeholder="Enter Image Credits (comma separated)" required maxlength="350">
+            <input id="description" class="input" type="text" placeholder="Enter Description" required maxlength="500">
+        </div>
+    </div>
+
+    <div class="field">
+        <label class="label">Image Credit</label>
+        <div class="control">
+            <input id="imageCredit" class="input" type="text" placeholder="Enter Image Credits (comma separated)" maxlength="350">
         </div>
     </div>
 
@@ -102,44 +98,49 @@
         <div class="control">
             <div class="select">
                 <select id="sekcija" required>
-                    <option value="clanek" selected>clanek</option>
-                    <option value="mix">mix</option>
+                    <option value="notice" selected> 🚀 Briefs</option>
+                    <option value="fokus">🔥 Big Feature</option>
+                    <option value="izbor">❤️ Favs</option>
                 </select>
             </div>
         </div>
     </div>
 
-    <div class="field">
-        <label class="label">Draft *</label>
-        <div class="control">
-            <div class="select">
-                <select id="draft" required>
-                    <option value="false">No</option>
-                    <option value="true" selected>Yes</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
     <div class="field">
-        <label class="label">Text</label>
+        <label class="label">Write and edit your Article:</label>
         <div class="control">
             <!-- Replace the textarea with the editor element -->
             <div id="editor"></div>
         </div>
     </div>
 
+    <!-- Confirmation Checkbox -->
+    <label class="checkbox">
+        <input type="checkbox" id="confirmCheckbox" required>
+        I confirm that any materials submitted are licensed under a Creative Commons, and I grant permission for the publication. Pressing "Publish" will submit the article for publication.
+    </label>
+
+    <label class="checkbox">
+        <input type="checkbox" id="confirmCheckboxRead" required>
+        <strong>I have checked the article for grammar and spelling.</strong>
+    </label>
+
     <div class="control">
-        <button type="submit" id="downloadMarkdownWithYAMLAndImages" class="button is-primary">Download Package</button>
+        <div id="uploadMessage" class="is-size-4 has-text-weight-bold pb-6"></div>
+        <button type="submit" id="uploadMarkdownWithYAMLAndImages" class="button is-large is-danger">⚡ Publish</button>
+    </div>
+
+   <br>
+
+    <div class="control">
+        <button type="submit" id="downloadMarkdownWithYAMLAndImages" class="button is-light">💾 Downoad</button>
     </div>
 
     <br>
 
-    <div class="control">
-        <div id="uploadMessage" class="is-size-4 has-text-weight-bold pb-6"></div>
+    <p class="subtitle has-text-centered">Built and maintained by <br><a href="https://github.com/roverbird"><img src="https://coalmillsafety.com/img/logo-s-small.svg"></a></small></p>
 
-        <button type="submit" id="uploadMarkdownWithYAMLAndImages" class="button is-primary">Upload Package</button>
-    </div>
 </form>
 
 </div>
@@ -147,7 +148,7 @@
 </section>
 
 
-<!-- Load dependencies -->
+<!-- load required libraries -->
 <!--Toast UI editor -->
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <!-- Mammoth to convert Docx -->
@@ -156,385 +157,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <!-- FileSaver -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-
-<!-- Load Dashboard Script --->
-<script>
-// Define constants for element references
-const refs = {
-    imagePreviews: document.querySelector('#previews'),
-    fileSelector: document.getElementById('file-input'),
-    parseWordDocxFileInput: document.getElementById('parseWordDocxFile'),
-    modifiedFilenames: [] // Initialize modifiedFilenames array
-};
-
-// Function to add image preview
-function addImagePreview(container, imageURL, filename) {
-    const imageBox = document.createElement("div");
-    imageBox.classList.add("column", "is-one-fifth");
-
-    const imageLink = document.createElement("a");
-    imageLink.href = imageURL;
-    imageLink.download = filename;
-
-    const imgElement = document.createElement("img");
-    imgElement.src = imageURL;
-
-    const removeButton = createButton("X", "is-danger", () => removeImage(imageBox, filename));
-
-    const moveDownButton = createButton("Move Down", "is-primary", () => moveImageDown(container, imageBox, filename));
-
-    imageLink.appendChild(imgElement);
-    imageBox.appendChild(imageLink);
-    imageBox.appendChild(removeButton);
-    imageBox.appendChild(moveDownButton);
-    container.appendChild(imageBox);
-
-    refs.modifiedFilenames.push(filename);
-}
-
-// Function to remove image
-function removeImage(imageBox, filename) {
-    imageBox.remove();
-    refs.modifiedFilenames = refs.modifiedFilenames.filter(name => name !== filename);
-}
-
-// Function to move image down
-function moveImageDown(container, imageBox, filename) {
-    const index = refs.modifiedFilenames.indexOf(filename);
-    if (index < refs.modifiedFilenames.length - 1) {
-        [refs.modifiedFilenames[index], refs.modifiedFilenames[index + 1]] = [refs.modifiedFilenames[index + 1], refs.modifiedFilenames[index]];
-        container.insertBefore(imageBox, imageBox.nextElementSibling.nextElementSibling);
-    }
-}
-
-// Helper function to create buttons
-function createButton(text, className, onClick) {
-    const button = document.createElement("button");
-    button.textContent = text;
-    button.classList.add("button", className, "is-small");
-    button.addEventListener("click", onClick);
-    return button;
-}
-
-// Function to process user-uploaded image file
-// We resize them to desired size and convert them to webp format
-function processFile(file) {
-    if (!file) return;
-
-    const now = new Date();
-    const timestamp = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}-IMG-${Math.floor(Math.random() * 10000).toString().padStart(5, '0')}`;
-
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        const imageURL = event.target.result;
-        const filename = `${timestamp}.webp`;
-
-        const tempImg = new Image();
-        tempImg.src = imageURL;
-        tempImg.onload = function() {
-            const targetWidth = 820;  // This is where you set the size to which user-uploaded images are resized
-            const targetHeight = (targetWidth / tempImg.width) * tempImg.height;
-
-            const canvas = document.createElement('canvas');
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-            const ctx = canvas.getContext('2d');
-
-            ctx.drawImage(tempImg, 0, 0, targetWidth, targetHeight);
-
-            const webPURL = canvas.toDataURL("image/webp");
-            addImagePreview(refs.imagePreviews, webPURL, filename);
-        };
-    };
-    reader.readAsDataURL(file);
-}
-
-// Function to process files
-function processFiles(files) {
-    for (const file of files) {
-        processFile(file);
-    }
-}
-
-// Event listener for file input change
-refs.fileSelector.addEventListener("change", function () {
-    processFiles(refs.fileSelector.files);
-    refs.fileSelector.value = "";
-});
-
-// Function to print filenames in YAML format
-function printFilenamesYAML() {
-    console.log("Figures:");
-    refs.modifiedFilenames.forEach(filename => {
-        console.log(`- '${filename}'`);
-    });
-}
-
-// Function to handle saving text
-function saveText() {
-    const markdown = editor.getMarkdown();
-    // Implement saving logic here // but do not need to edit this
-}
-
-// Function to generate YAML frontmatter
-function generateYAMLFrontmatter() {
-    const slugify = str => {
-        const normalizedStr = str.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Normalize and remove diacritics // Here we create hard-coded slug for Hugo
-        const slug = normalizedStr
-            .toLowerCase()
-            .trim()
-            .replace(/[^\w\s-]/g, '')
-            .replace(/[\s_-]+/g, '-')
-            .replace(/^-+|-+$/g, '');
-
-        const words = slug.split('-').slice(0, 5);
-        return words.join('-');
-    };
-
-    const author = document.getElementById('author').value.split(',').map(author => author.trim().replace(/['"]/g, ''));
-    const title = document.getElementById('title').value.replace(/['"]/g, '');
-    const rubrika = document.getElementById('rubrika').value.replace(/['"]/g, '');
-    const imageCredit = document.getElementById('imageCredit').value.replace(/['"]/g, '');
-    const tags = document.getElementById('tags').value.split(',').map(tag => tag.trim().replace(/['"]/g, ''));
-
-    const sekcija = document.getElementById('sekcija').value;
-    const draft = document.getElementById('draft').value;
-    const md = editor.getMarkdown();
-
-    const slug = slugify(title);
-    const selectedDate = new Date(document.getElementById('dateInput').value);
-    const dateHugo = selectedDate.toISOString().slice(0, 19);
-    const dateFilename = `${selectedDate.getFullYear()}-${(selectedDate.getMonth() + 1).toString().padStart(2, '0')}-${selectedDate.getDate().toString().padStart(2, '0')}`;
-    const randomSuffix = Math.floor(Math.random() * 10000).toString().padStart(5, '0');
-    const filenameMd = `${dateFilename}-TXT-${randomSuffix}.md`;
-
-    // Set your YAML frontmatter here, edit as necessary
-    // Figures field is a YAML sequence of uploaded image files
-    // Foto field is not a YAML sequence; for example, you can use it as cover image paramerter in your Hugo layout
-    // Edit this frontmatter templates as needed and required by your Hugo config.toml
-    // ${md} variable is the actual text content
-    const yamlFrontmatter = `---
-Author:${author && author.some(Boolean) ? `\n${author.map(author => `- '${author}'`).join('\n')}` : ''}
-Date: '${dateHugo}'
-Rubrika:${rubrika ? ` '${rubrika}'` : ''}
-Tags:${tags && tags.some(Boolean) ? `\n${tags.map(tag => `- '${tag}'`).join('\n')}` : ''}
-Title: '${title}'
-Slug:${slug ? ` '${slug}'` : ''}
-imageCredit:${imageCredit ? ` '${imageCredit}'` : ''}
-sekcija:${sekcija ? `\n- '${sekcija}'` : ''}
-Datoteka:${filenameMd ? ` '${filenameMd}'` : ''}
-draft:${draft ? ` '${draft}'` : ''}
-
-Figures:${refs.modifiedFilenames.length > 0 ? `\n${refs.modifiedFilenames.map(filename => `- '${filename}'`).join('\n')}` : ''}
-Foto:${refs.modifiedFilenames.length > 0 ? ` '${refs.modifiedFilenames[0]}'` : ''}
----
-${md}`;
-
-    return { yamlFrontmatter, filenameMd };
-
-}
-
-// Function to download Markdown file with YAML frontmatter and images
-// It generates a zip package with the resulting md file and frontmatter and webp images for deployment
-// to save zip to user's device
-// Useful for a 'half-manual minimal setup' workflow without direct integration with your Hugo production environment
-
-function downloadMarkdownWithYAMLAndImages() {
-    const { yamlFrontmatter, filenameMd } = generateYAMLFrontmatter();
-    const filenamePaket = `${filenameMd}`;
-    const markdownContent = `${yamlFrontmatter}\n`;
-
-    // Create a zip file
-    const zip = new JSZip();
-
-    // Add Markdown file with YAML frontmatter
-    zip.file(filenamePaket, markdownContent);
-
-    // Add images
-    const getImageData = async (imgElement) => {
-        return new Promise((resolve, reject) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            //img.crossOrigin = 'anonymous'; // Enable CORS if images are from a different origin
-            img.onload = function () {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                canvas.toBlob(resolve, 'image/webp');
-            };
-            img.onerror = reject;
-            img.src = imgElement.src;
-        });
-    };
-
-    const imagePromises = Array.from(document.querySelectorAll('#previews img')).map(img => getImageData(img));
-    Promise.all(imagePromises)
-        .then(imageBlobs => {
-            imageBlobs.forEach((blob, index) => {
-                const filename = refs.modifiedFilenames[index];
-                zip.file(filename, blob, { binary: true });
-            });
-
-            // Generate zip content and trigger download
-            zip.generateAsync({ type: "blob" }).then(content => {
-                saveAs(content, `${filenamePaket.split('.')[0]}.zip`);
-            }).catch(error => {
-                console.error('Error generating zip content:', error);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching images:', error);
-        });
-}
-
-
-// Function to Upload Markdown File with YAML and images
-// This function is used to upload content package (md and converted images) to your server
-// You need to set up your back-end to receive the zip file and process it how you desire
-
-function uploadZipToFlask(zip) {
-    // Create FormData object
-    const formData = new FormData();
-    const datePaket = Date.now();
-    formData.append('zipFile', zip, `paket-${datePaket}.zip`);
-
-    // Make a POST request to your server-side app (you will need to write and deploy it yourself)
-    fetch('/youruploadsendpointhere/', {
-        method: 'POST',
-        body: formData  // Assuming formData contains the file data
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Failed to upload file');
-        }
-    })
-    .then(data => {
-        // Update the content of the <div> with the message
-        document.getElementById('uploadMessage').innerHTML = data.message;
-
-    })
-    .catch(error => {
-        // Handle any errors
-        console.error('Error:', error);
-    });
-}
-
-function uploadMarkdownWithYAMLAndImages() {
-    const { yamlFrontmatter, filenameMd } = generateYAMLFrontmatter();
-    const filenamePaket = `${filenameMd}`;
-    const markdownContent = `${yamlFrontmatter}\n`;
-
-    // Create a zip file
-    const zip = new JSZip();
-
-    // Add Markdown file with YAML frontmatter
-    zip.file(filenamePaket, markdownContent);
-
-    // Add images
-    const getImageData = async (imgElement) => {
-        return new Promise((resolve, reject) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            //img.crossOrigin = 'anonymous'; // Enable CORS if images are from a different origin
-            img.onload = function () {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                canvas.toBlob(resolve, 'image/webp');
-            };
-            img.onerror = reject;
-            img.src = imgElement.src;
-        });
-    };
-
-    const imagePromises = Array.from(document.querySelectorAll('#previews img')).map(img => getImageData(img));
-    Promise.all(imagePromises)
-        .then(imageBlobs => {
-            imageBlobs.forEach((blob, index) => {
-                const filename = refs.modifiedFilenames[index];
-                zip.file(filename, blob, { binary: true });
-            });
-
-            // Generate zip content and trigger upload
-            zip.generateAsync({ type: "blob" }).then(content => {
-                uploadZipToFlask(content); // Upload the generated zip file
-            }).catch(error => {
-                console.error('Error generating zip content:', error);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching images:', error);
-        });
-}
-
-// TOAST UI editor settings, you can set up the toolbar how you require, refer to TUI docs
-const editor = new toastui.Editor({
-    el: document.querySelector('#editor'),
-    height: '1000px',
-    initialEditType: 'markdown',
-    previewStyle: 'vertical',
-    toolbarItems: [
-        ['heading', 'bold', 'italic'],
-        ['hr', 'quote'],
-        ['ul', 'ol', 'task', 'indent', 'outdent'],
-        ['table', 'link'],
-    ]
-});
-
-// Function to parse uploaded Word document to Markdown
-function parseWordDocxFile(inputElement) {
-    var files = inputElement.files || [];
-    if (!files.length) return;
-    var file = files[0];
-
-    console.time();
-    var reader = new FileReader();
-    reader.onloadend = function(event) {
-        var arrayBuffer = reader.result;
-
-        mammoth.convertToMarkdown({arrayBuffer: arrayBuffer}).then(function (resultObject) {
-            let markdown = resultObject.value;
-
-            // Remove unwanted escaping of punctuation marks, this is post-production of text content that was generated by mammoth.js
-            // Mammoth escapes some characters in resulting md content, which is not required by Hugo
-            markdown = markdown.replace(/\\([^\w\s])/g, '$1');
-
-            // Set the modified Markdown to the editor
-            editor.setMarkdown(markdown);
-        }).catch(function(error) {
-            console.error('Error converting Word document to Markdown:', error);
-        });
-    };
-    reader.readAsArrayBuffer(file);
-}
-
-// Event listener for Word document file input change
-refs.parseWordDocxFileInput.addEventListener("change", function () {
-    parseWordDocxFile(this);
-    this.value = ""; // Clear the input field after processing the file
-});
-
-// Event listener for "Download Package" button
-// This allows downloading File Package to local machine
-document.getElementById('downloadMarkdownWithYAMLAndImages').addEventListener('click', function(event) {
-    event.preventDefault();
-    downloadMarkdownWithYAMLAndImages();
-});
-
-
-// Event listener for "Upload Package" button 
-// Button to start server uploads
-document.getElementById('yamlForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    uploadMarkdownWithYAMLAndImages();
-});
-
-</script>
+<!-- Dashboard.js -->
+<script type="module" src="./dashboard.js"></script>
 
 </body>
 </html>

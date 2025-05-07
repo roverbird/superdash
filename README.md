@@ -1,6 +1,8 @@
 # YAML Frontmatter Markdown Dashboard for Hugo Static Site Generator
 
-This is a customizable one-page dashboard designed to facilitate the creation of YAML frontmatter Markdown files for use with Hugo Static Site Generator or any other headless CMS that relies on MD. It includes features for managing images and converting them to the WebP format.
+Customizable CMS admin panel (dashboard) designed to facilitate the creation of YAML frontmatter Markdown files for use with Hugo Static Site Generator or any other headless CMS that relies on MD. It includes features for managing images and converting them to the WebP format. In backend folder you will find a sample flask app to handle server uploads. This dashboard can work independently without backend if you just want to generate and save hugo content package on your local device. 
+
+_Notice: this is not a Hugo CMS, but an efficient building brick for your custom Hugo workflow. It is made with content manager (creator) in mind, to make content creation very enjoyable and simple. Dashboard is fully customizable for any kind of markdown frontmatter requirements. Please, contact me if you need to migrate from WordPress or legacy CRM into a modern content management workflow that is build for Firebase or clould hosting / CDN. I will help prepare your legacy content for migration, will create dashboards that editors love to use. You custom CMS will enhace human productivity and will be ready for AI agent integration. Mail a.sotov@yahoo.co.uk today to get a quote._
 
 ## Demo
 
