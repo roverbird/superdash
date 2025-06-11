@@ -1,8 +1,32 @@
+# **KalashnikovCMS** — The Brutalist Publishing Machine
+
+For years, I dreamed of a CMS that’s as simple and powerful as a Kalashnikov rifle - rugged, reliable, and built for pure firepower. No distractions, no database, just **Markdown**, **metadata**, and **deployments**. So, this shit is built to work with Hugo, headless CMS.
+
+## What’s the story?
+
+A brutalist headless CMS machine **built for animals and robots who write Markdown directly**, but it’s also user-friendly. It’s minimal, it’s raw, it’s 100% client-side customizable admin panel plus rock-solid backend pipeline.
+
+## The stack?
+
+* **Editor dashboard:** Pure client-side JS — a lean, toastful editor that lets you upload Word docs (which become Markdown), resize and convert images to WebP, and manage metadata — all in your browser, no backend involved.
+* **Uploader backend:** A tiny Flask server app listens for uploads, handles secure file storage, and only that.
+* **Build & deploy:** Hugo turns your Markdown and metadata into a blazing-fast static site, automatically deployed to Firebase Hosting — a CDN built for speed and reliability.
+* **Automation:** completely decoupled from anything, via a watchdog.
+* **Bonus:** It’s AI-agent ready, so you can plug in your favorite AI to spit out content, generate metadata, or help with SEO — it's a Kalashnikov.
+
+## Why brutalist?
+
+All CMS suck. This isn’t grandma’s WordPress. It’s a no-nonsense, bare-bones, lean thing. It looks familiar because it feels right, low maintanance, minimal, intuitive, a tool that just disappears so you can create.
+
+Ready to load? 🔫✨
+
+--- 
+
 # YAML Frontmatter Markdown Dashboard for Hugo Static Site Generator
 
 Customizable CMS admin panel (dashboard) designed to facilitate the creation of YAML frontmatter Markdown files for use with Hugo Static Site Generator or any other headless CMS that relies on MD. It includes features for managing images and converting them to the WebP format. In backend folder you will find a sample flask app to handle server uploads. This dashboard can work independently without backend if you just want to generate and save hugo content package on your local device. 
 
-This is not a Hugo CMS, but a powerful and lightweight building block for creating your own custom Hugo workflow. It’s designed with content creators in mind, making content creation simple, fast, and enjoyable.
+Lightweight building block for creating your own custom Hugo workflow. It’s designed with content creators in mind, making content creation simple, fast, and enjoyable.
 
 The dashboard is fully customizable to support any type of Markdown frontmatter structure.
 
@@ -33,25 +57,9 @@ If you're looking to migrate from WordPress or a legacy CMS/CRM to a modern, Fir
     ```bash
     git clone https://github.com/roverbird/superdash.git
     ```
+2. **Customize Configuration**: Customize the configuration options according to your project requirements. Update webform UI elements and YAML fields as needed.
 
-2. **Install Dependencies**: Make sure you have all the necessary dependencies installed. This project relies on JavaScript libraries like Toast UI Editor and JSZip.
-
-You can install them from CDN:
-
-    ```html
-    <!-- Toast UI editor -->
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <!-- Mammoth to convert Docx -->
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.4.8/mammoth.browser.min.js"></script>
-    <!-- JSZip -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <!-- FileSaver -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    ```
-
-3. **Customize Configuration**: Customize the configuration options according to your project requirements. Update webform UI elements and YAML fields as needed.
-
-4. **Run the Application**: Open the `index.html` file in your web browser to start using the dashboard.
+3. **Run the Application**: Open the `index.html` file in your web browser to start using the dashboard.
 
 ## Usage
 
